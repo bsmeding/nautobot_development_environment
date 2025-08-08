@@ -68,7 +68,7 @@ services:
     restart: unless-stopped
 
   redis:
-    image: redis:6
+    image: redis:8
     container_name: ${REDIS_CONTAINER_NAME:-redis}
     ports:
       - "6379:6379"
