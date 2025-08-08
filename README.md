@@ -396,28 +396,29 @@ CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_c
 CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_c
 ```
 
-**2. Update docker-compose.yml to Use Environment Variables**
+**2. docker-compose.yml Already Uses Environment Variables**
 
-The `docker-compose.yml` file should be updated to use these environment variables:
+The `docker-compose.yml` file is already configured to use environment variables with default values:
 
 ```yaml
-# docker-compose.yml (same for all customers)
+# docker-compose.yml (already configured with environment variables)
 services:
   nautobot:
     ports:
       - "${NAUTOBOT_PORT:-8080}:8080"
     container_name: ${NAUTOBOT_CONTAINER_NAME:-nautobot}
     environment:
-      - SUPERUSER_NAME=${SUPERUSER_NAME:-admin}
-      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-admin}
-      - POSTGRES_DB=${POSTGRES_DB:-nautobot}
+      - NAUTOBOT_SUPERUSER_NAME=${SUPERUSER_NAME:-admin}
+      - NAUTOBOT_SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-admin}
+      - NAUTOBOT_DB_NAME=${POSTGRES_DB:-nautobot}
       # ... other environment variables
 
   postgres:
     container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
     environment:
       - POSTGRES_DB=${POSTGRES_DB:-nautobot}
-      # ... other environment variables
+      - POSTGRES_USER=${POSTGRES_USER:-nautobot}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-nautobotpassword}
 
   redis:
     container_name: ${REDIS_CONTAINER_NAME:-redis}
