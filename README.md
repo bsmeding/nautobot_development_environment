@@ -56,6 +56,8 @@ cd nautobot_development_environment
    cat > .env << EOF
    NAUTOBOT_PORT=8080
    POSTGRES_DB=nautobot
+   POSTGRES_USER=nautobot
+   POSTGRES_PASSWORD=nautobotpassword
    SUPERUSER_NAME=admin
    SUPERUSER_PASSWORD=admin
    NAUTOBOT_CONTAINER_NAME=nautobot
@@ -63,6 +65,9 @@ cd nautobot_development_environment
    REDIS_CONTAINER_NAME=redis
    CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat
    CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1
+   # Internal service discovery (matches container names)
+   NAUTOBOT_DB_HOST=postgres
+   NAUTOBOT_REDIS_HOST=redis
    EOF
    ```
 
@@ -84,6 +89,8 @@ For easy customization, create a `.env` file in the project root:
 # .env
 NAUTOBOT_PORT=8080
 POSTGRES_DB=nautobot
+POSTGRES_USER=nautobot
+POSTGRES_PASSWORD=nautobotpassword
 SUPERUSER_NAME=admin
 SUPERUSER_PASSWORD=admin
 NAUTOBOT_CONTAINER_NAME=nautobot
@@ -91,6 +98,9 @@ POSTGRES_CONTAINER_NAME=postgres
 REDIS_CONTAINER_NAME=redis
 CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat
 CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1
+# Internal service discovery (matches container names)
+NAUTOBOT_DB_HOST=postgres
+NAUTOBOT_REDIS_HOST=redis
 ```
 
 **Benefits:**
@@ -359,6 +369,8 @@ For each customer, create a `.env` file to customize the environment:
 CUSTOMER_NAME=Customer A
 NAUTOBOT_PORT=8080
 POSTGRES_DB=nautobot_customer_a
+POSTGRES_USER=nautobot_customer_a
+POSTGRES_PASSWORD=customer_a_password
 SUPERUSER_NAME=admin_customer_a
 SUPERUSER_PASSWORD=customer_a_password
 NAUTOBOT_CONTAINER_NAME=nautobot_customer_a
@@ -366,6 +378,9 @@ POSTGRES_CONTAINER_NAME=postgres_customer_a
 REDIS_CONTAINER_NAME=redis_customer_a
 CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_a
 CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_a
+# Internal service discovery (matches container names)
+NAUTOBOT_DB_HOST=postgres_customer_a
+NAUTOBOT_REDIS_HOST=redis_customer_a
 ```
 
 ```bash
@@ -373,6 +388,8 @@ CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_a
 CUSTOMER_NAME=Customer B
 NAUTOBOT_PORT=8081
 POSTGRES_DB=nautobot_customer_b
+POSTGRES_USER=nautobot_customer_b
+POSTGRES_PASSWORD=customer_b_password
 SUPERUSER_NAME=admin_customer_b
 SUPERUSER_PASSWORD=customer_b_password
 NAUTOBOT_CONTAINER_NAME=nautobot_customer_b
@@ -380,6 +397,9 @@ POSTGRES_CONTAINER_NAME=postgres_customer_b
 REDIS_CONTAINER_NAME=redis_customer_b
 CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_b
 CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_b
+# Internal service discovery (matches container names)
+NAUTOBOT_DB_HOST=postgres_customer_b
+NAUTOBOT_REDIS_HOST=redis_customer_b
 ```
 
 ```bash
@@ -387,6 +407,8 @@ CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_b
 CUSTOMER_NAME=Customer C
 NAUTOBOT_PORT=8082
 POSTGRES_DB=nautobot_customer_c
+POSTGRES_USER=nautobot_customer_c
+POSTGRES_PASSWORD=customer_c_password
 SUPERUSER_NAME=admin_customer_c
 SUPERUSER_PASSWORD=customer_c_password
 NAUTOBOT_CONTAINER_NAME=nautobot_customer_c
@@ -394,6 +416,9 @@ POSTGRES_CONTAINER_NAME=postgres_customer_c
 REDIS_CONTAINER_NAME=redis_customer_c
 CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_c
 CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_c
+# Internal service discovery (matches container names)
+NAUTOBOT_DB_HOST=postgres_customer_c
+NAUTOBOT_REDIS_HOST=redis_customer_c
 ```
 
 **2. docker-compose.yml Already Uses Environment Variables**
