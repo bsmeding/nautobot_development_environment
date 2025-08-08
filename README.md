@@ -2,12 +2,27 @@
 
 This is a Docker Compose setup for Nautobot v2 with local development capabilities for configuration and custom jobs.
 
+## About Nautobot
+
+Nautobot serves as a **Single Source of Truth (SSoT)** for managing network infrastructure. It provides a centralized repository for device information, configuration management, compliance checks, automation, and vulnerability reporting. Nautobot can also synchronize with various third-party tools to enhance automation and management.
+
+For more information about Nautobot's capabilities as the ultimate network CMDB, check out: [Nautobot: The Single Source of Truth (SSoT) for Network Automation](https://netdevops.it/nautobot_the_ultimate_network_cmdb/)
+
 ## Features
 
 - **Local Configuration Editing**: Edit `nautobot_config.py` locally
 - **Local Job Development**: Develop custom jobs in the `./jobs/` directory
 - **Automatic Setup**: Helper script to copy files from container if needed
 - **Full Stack**: Includes PostgreSQL, Redis, and Celery workers
+
+## Getting Started
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/bsmeding/nautobot_job_development_environment.git
+cd nautobot_job_development_environment
+```
 
 ## Directory Structure
 
