@@ -1,6 +1,6 @@
-# Nautobot v2 Test Environment
+# Nautobot Development Environment
 
-This is a Docker Compose setup for Nautobot v2 with local development capabilities for configuration and custom jobs.
+This is a comprehensive Docker Compose setup for Nautobot v2 with local development capabilities for configuration, plugins, and custom jobs.
 
 ## About Nautobot
 
@@ -11,17 +11,19 @@ For more information about Nautobot's capabilities as the ultimate network CMDB,
 ## Features
 
 - **Local Configuration Editing**: Edit `nautobot_config.py` locally
+- **Plugin Development**: Pre-configured with 12+ popular Nautobot plugins
 - **Local Job Development**: Develop custom jobs in the `./jobs/` directory
 - **Automatic Setup**: Helper script to copy files from container if needed
 - **Full Stack**: Includes PostgreSQL, Redis, and Celery workers
+- **Production Ready**: Comprehensive configuration for enterprise use
 
 ## Getting Started
 
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/bsmeding/nautobot_job_development_environment.git
-cd nautobot_job_development_environment
+git clone https://github.com/bsmeding/nautobot_dev_environment.git
+cd nautobot_dev_environment
 ```
 
 ## Directory Structure
@@ -30,8 +32,10 @@ cd nautobot_job_development_environment
 .
 ├── docker-compose.yml          # Main Docker Compose configuration
 ├── get_config.sh              # Helper script to copy files from container
+├── README.md                  # Comprehensive documentation
+├── .gitignore                 # Git ignore rules
 ├── config/
-│   └── nautobot_config.py     # Nautobot configuration file (editable locally)
+│   └── nautobot_config.py     # Nautobot configuration with plugins
 └── jobs/
     └── jobs/                  # Custom jobs directory
         ├── __init__.py        # Makes jobs a Python package
