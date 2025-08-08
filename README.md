@@ -62,6 +62,151 @@ cd nautobot_job_development_environment
 - Changes are immediately reflected in the container
 - Restart containers after major config changes: `docker-compose restart`
 
+### Plugin Configuration
+
+This setup includes pre-configured plugins for advanced network automation. The plugins are configured in `./config/nautobot_config.py`:
+
+#### Available Plugins
+
+```python
+PLUGINS = [
+    "nautobot_bgp_models",              # BGP routing management
+    "nautobot_capacity_metrics",        # Capacity monitoring
+    "nautobot_data_validation_engine",  # Data validation and compliance
+    "nautobot_design_builder",          # Network design patterns
+    "nautobot_device_lifecycle_mgmt",   # Device lifecycle management
+    "nautobot_device_onboarding",       # Automated device onboarding
+    "nautobot_firewall_models",         # Firewall rule management
+    "nautobot_floor_plan",              # Physical layout visualization
+    "nautobot_golden_config",           # Configuration management
+    "nautobot_plugin_nornir",           # Network automation integration
+    "nautobot_secrets_providers",       # Secrets management
+    "nautobot_ssot",                    # Single Source of Truth integrations
+]
+```
+
+#### Plugin Configuration Example
+
+```python
+PLUGINS_CONFIG = {
+    'nautobot_ssot': {
+        'enable_sso': True,
+        'enable_sync': True,
+    },
+    'nautobot_plugin_nornir': {
+        'use_config_context': True,
+        'connection_options': {
+            'netmiko': {
+                'extras': {
+                    'global_delay_factor': 2,
+                },
+            },
+            'napalm': {
+                'extras': {
+                    'optional_args': {
+                        'global_delay_factor': 2,
+                    },
+                },
+            },
+        },
+    },
+    'nautobot_golden_config': {
+        'enable_backup': True,
+        'enable_compliance': True,
+        'enable_intended': True,
+        'enable_sotagg': True,
+        'sot_agg_transposer': 'nautobot_golden_config.transposers.SoTaggTransposer',
+        'backup_repository': 'backup_repo',
+        'intended_repository': 'intended_repo',
+        'jinja_repository': 'jinja_repo',
+        'jinja_path_template': 'templates/{{ obj.platform.slug }}/{{ obj.platform.slug }}.j2',
+        'backup_path_template': 'backup/{{ obj.platform.slug }}/{{ obj.name }}.cfg',
+        'intended_path_template': 'intended/{{ obj.platform.slug }}/{{ obj.name }}.cfg',
+        'backup_test_connectivity': False,
+    },
+    'nautobot_device_lifecycle_mgmt': {
+        'enable_software': True,
+        'enable_hardware': True,
+        'enable_contract': True,
+        'enable_provider': True,
+        'enable_cve': True,
+        'enable_software_image': True,
+    },
+    'nautobot_device_onboarding': {
+        'default_platform': 'cisco_ios',
+        'default_site': 'main',
+        'default_role': 'switch',
+        'default_status': 'active',
+        'default_management_interface': 'GigabitEthernet0/0',
+        'default_management_prefix_length': 24,
+        'default_management_protocol': 'ssh',
+        'default_management_port': 22,
+        'default_management_timeout': 30,
+        'default_management_verify_ssl': False,
+        'default_management_auto_create_management_interface': True,
+        'default_management_auto_create_management_ip': True,
+    },
+    'nautobot_data_validation_engine': {
+        'enable_validation': True,
+        'enable_compliance': True,
+        'enable_reporting': True,
+    },
+    'nautobot_plugin_floorplan': {
+        'enable_floorplan': True,
+        'enable_rack_views': True,
+        'enable_device_views': True,
+    },
+    'nautobot_firewall_models': {
+        'enable_firewall_rules': True,
+        'enable_firewall_zones': True,
+        'enable_firewall_policies': True,
+        'enable_firewall_services': True,
+        'enable_firewall_addresses': True,
+        'enable_firewall_address_groups': True,
+        'enable_firewall_service_groups': True,
+        'enable_firewall_rule_groups': True,
+    },
+    'nautobot_design_builder': {
+        'enable_designs': True,
+        'enable_design_instances': True,
+        'enable_design_patterns': True,
+    },
+}
+```
+
+#### Adding New Plugins
+
+To add a new plugin:
+
+1. **Install the plugin** (if not already in the Docker image):
+   ```bash
+   docker exec nautobot pip install nautobot-your-plugin
+   ```
+
+2. **Add to PLUGINS list** in `./config/nautobot_config.py`:
+   ```python
+   PLUGINS = [
+       # ... existing plugins ...
+       "nautobot_your_plugin",
+   ]
+   ```
+
+3. **Add configuration** to PLUGINS_CONFIG:
+   ```python
+   PLUGINS_CONFIG = {
+       # ... existing config ...
+       'nautobot_your_plugin': {
+           'setting1': 'value1',
+           'setting2': 'value2',
+       },
+   }
+   ```
+
+4. **Restart Nautobot**:
+   ```bash
+   docker-compose restart nautobot
+   ```
+
 ### Custom Jobs
 - Add your custom jobs to `./jobs/jobs/`
 - Each job should be a Python file with a class that inherits from `Job`
