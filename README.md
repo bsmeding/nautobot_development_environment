@@ -310,46 +310,83 @@ git clone https://github.com/bsmeding/nautobot_development_environment.git custo
 
 #### Step 2: Customize Each Environment
 
-For each customer, customize the following:
+For each customer, create a `.env` file to customize the environment:
 
-**1. Update docker-compose.yml (Port Configuration)**
-```yaml
-# customer-a/docker-compose.yml
-services:
-  nautobot:
-    ports:
-      - "8080:8080"  # Customer A uses port 8080
-    container_name: nautobot_customer_a
+**1. Create Customer-Specific .env Files**
 
-# customer-b/docker-compose.yml  
-services:
-  nautobot:
-    ports:
-      - "8081:8080"  # Customer B uses port 8081
-    container_name: nautobot_customer_b
-
-# customer-c/docker-compose.yml
-services:
-  nautobot:
-    ports:
-      - "8082:8080"  # Customer C uses port 8082
-    container_name: nautobot_customer_c
+```bash
+# customer-a/.env
+CUSTOMER_NAME=Customer A
+NAUTOBOT_PORT=8080
+POSTGRES_DB=nautobot_customer_a
+SUPERUSER_NAME=admin_customer_a
+SUPERUSER_PASSWORD=customer_a_password
+NAUTOBOT_CONTAINER_NAME=nautobot_customer_a
+POSTGRES_CONTAINER_NAME=postgres_customer_a
+REDIS_CONTAINER_NAME=redis_customer_a
+CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_a
+CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_a
 ```
 
-**2. Update Container Names**
+```bash
+# customer-b/.env
+CUSTOMER_NAME=Customer B
+NAUTOBOT_PORT=8081
+POSTGRES_DB=nautobot_customer_b
+SUPERUSER_NAME=admin_customer_b
+SUPERUSER_PASSWORD=customer_b_password
+NAUTOBOT_CONTAINER_NAME=nautobot_customer_b
+POSTGRES_CONTAINER_NAME=postgres_customer_b
+REDIS_CONTAINER_NAME=redis_customer_b
+CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_b
+CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_b
+```
+
+```bash
+# customer-c/.env
+CUSTOMER_NAME=Customer C
+NAUTOBOT_PORT=8082
+POSTGRES_DB=nautobot_customer_c
+SUPERUSER_NAME=admin_customer_c
+SUPERUSER_PASSWORD=customer_c_password
+NAUTOBOT_CONTAINER_NAME=nautobot_customer_c
+POSTGRES_CONTAINER_NAME=postgres_customer_c
+REDIS_CONTAINER_NAME=redis_customer_c
+CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat_customer_c
+CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1_customer_c
+```
+
+**2. Update docker-compose.yml to Use Environment Variables**
+
+The `docker-compose.yml` file should be updated to use these environment variables:
+
 ```yaml
-# customer-a/docker-compose.yml
+# docker-compose.yml (same for all customers)
 services:
   nautobot:
-    container_name: nautobot_customer_a
+    ports:
+      - "${NAUTOBOT_PORT:-8080}:8080"
+    container_name: ${NAUTOBOT_CONTAINER_NAME:-nautobot}
+    environment:
+      - SUPERUSER_NAME=${SUPERUSER_NAME:-admin}
+      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-admin}
+      - POSTGRES_DB=${POSTGRES_DB:-nautobot}
+      # ... other environment variables
+
   postgres:
-    container_name: postgres_customer_a
+    container_name: ${POSTGRES_CONTAINER_NAME:-postgres}
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-nautobot}
+      # ... other environment variables
+
   redis:
-    container_name: redis_customer_a
+    container_name: ${REDIS_CONTAINER_NAME:-redis}
+
   celery-beat:
-    container_name: nautobot_celery_beat_customer_a
+    container_name: ${CELERY_BEAT_CONTAINER_NAME:-nautobot_celery_beat}
+
   celery-worker-1:
-    container_name: nautobot_celery_worker_1_customer_a
+    container_name: ${CELERY_WORKER_CONTAINER_NAME:-nautobot_celery_worker_1}
 ```
 
 **3. Customize Configuration**
@@ -370,25 +407,23 @@ PLUGINS = [
 
 #### Step 3: Customer-Specific Setup Scripts
 
-Create customer-specific setup scripts:
+Create customer-specific setup scripts that use the `.env` files:
 
 ```bash
 # customer-a/setup_customer_a.sh
 #!/bin/bash
 echo "Setting up Customer A Nautobot Environment..."
 
-# Customer-specific environment variables
-export CUSTOMER_NAME="Customer A"
-export CUSTOMER_PORT="8080"
-export CUSTOMER_DB_NAME="nautobot_customer_a"
+# Load environment variables from .env file
+source .env
 
 # Run setup
 ./get_config.sh
 docker-compose up -d
 
-echo "Customer A Nautobot available at: http://localhost:8080"
-echo "Username: admin_customer_a"
-echo "Password: customer_a_password"
+echo "Customer A Nautobot available at: http://localhost:${NAUTOBOT_PORT}"
+echo "Username: ${SUPERUSER_NAME}"
+echo "Password: ${SUPERUSER_PASSWORD}"
 ```
 
 ```bash
@@ -396,18 +431,16 @@ echo "Password: customer_a_password"
 #!/bin/bash
 echo "Setting up Customer B Nautobot Environment..."
 
-# Customer-specific environment variables
-export CUSTOMER_NAME="Customer B"
-export CUSTOMER_PORT="8081"
-export CUSTOMER_DB_NAME="nautobot_customer_b"
+# Load environment variables from .env file
+source .env
 
 # Run setup
 ./get_config.sh
 docker-compose up -d
 
-echo "Customer B Nautobot available at: http://localhost:8081"
-echo "Username: admin_customer_b"
-echo "Password: customer_b_password"
+echo "Customer B Nautobot available at: http://localhost:${NAUTOBOT_PORT}"
+echo "Username: ${SUPERUSER_NAME}"
+echo "Password: ${SUPERUSER_PASSWORD}"
 ```
 
 #### Step 4: Management Scripts
@@ -429,9 +462,9 @@ case "$1" in
         cd ../$CUSTOMER_B_DIR && docker-compose up -d
         cd ../$CUSTOMER_C_DIR && docker-compose up -d
         echo "All environments started!"
-        echo "Customer A: http://localhost:8080"
-        echo "Customer B: http://localhost:8081"
-        echo "Customer C: http://localhost:8082"
+        echo "Customer A: http://localhost:$(cd $CUSTOMER_A_DIR && source .env && echo $NAUTOBOT_PORT)"
+        echo "Customer B: http://localhost:$(cd $CUSTOMER_B_DIR && source .env && echo $NAUTOBOT_PORT)"
+        echo "Customer C: http://localhost:$(cd $CUSTOMER_C_DIR && source .env && echo $NAUTOBOT_PORT)"
         ;;
     "stop-all")
         echo "Stopping all customer environments..."
@@ -542,19 +575,31 @@ docker-compose logs -f
 docker-compose down
 ```
 
+### Benefits of Using .env Files
+
+1. **Single docker-compose.yml**: No need to maintain multiple docker-compose files
+2. **Easy Configuration**: Simple key-value pairs in `.env` files
+3. **Version Control Safe**: `.env` files can be excluded from git (add to `.gitignore`)
+4. **Environment Isolation**: Each customer has completely separate configuration
+5. **Easy Maintenance**: Update one `.env` file instead of modifying docker-compose.yml
+6. **Default Values**: Docker Compose provides fallback values if variables are missing
+
 ### Best Practices for Multi-Customer Setup
 
-1. **Use Different Ports**: Each customer gets a unique port (8080, 8081, 8082, etc.)
-2. **Unique Container Names**: Prevent conflicts between environments
-3. **Separate Databases**: Each customer has their own PostgreSQL database
-4. **Customer-Specific Configs**: Customize plugins and settings per customer
-5. **Version Control**: Each customer environment can have its own git branch
-6. **Documentation**: Maintain customer-specific README files
-7. **Backup Strategy**: Implement customer-specific backup procedures
+1. **Use .env Files**: Configure each customer via `.env` files instead of modifying docker-compose.yml
+2. **Unique Ports**: Each customer gets a unique port via `NAUTOBOT_PORT` in `.env`
+3. **Unique Container Names**: Prevent conflicts via container name variables in `.env`
+4. **Separate Databases**: Each customer has their own PostgreSQL database
+5. **Customer-Specific Configs**: Customize plugins and settings per customer
+6. **Version Control**: Each customer environment can have its own git branch
+7. **Documentation**: Maintain customer-specific README files
+8. **Backup Strategy**: Implement customer-specific backup procedures
 
 ### Access URLs
 
 After setup, access each customer environment at:
-- **Customer A**: http://localhost:8080
-- **Customer B**: http://localhost:8081  
-- **Customer C**: http://localhost:8082
+- **Customer A**: http://localhost:$(cd customer-a && source .env && echo $NAUTOBOT_PORT)
+- **Customer B**: http://localhost:$(cd customer-b && source .env && echo $NAUTOBOT_PORT)
+- **Customer C**: http://localhost:$(cd customer-c && source .env && echo $NAUTOBOT_PORT)
+
+Or check the `.env` file in each customer directory for the specific port configuration.
