@@ -31,6 +31,7 @@ cd nautobot_development_environment
 ```
 .
 ├── docker-compose.yml          # Main Docker Compose configuration
+├── .env                       # Environment variables (create this file)
 ├── get_config.sh              # Helper script to copy files from container
 ├── README.md                  # Comprehensive documentation
 ├── .gitignore                 # Git ignore rules
@@ -49,15 +50,54 @@ cd nautobot_development_environment
    ./get_config.sh
    ```
 
-2. **Start Nautobot**:
+2. **Optional: Create .env file for customization**:
+   ```bash
+   # Create .env file with default values
+   cat > .env << EOF
+   NAUTOBOT_PORT=8080
+   POSTGRES_DB=nautobot
+   SUPERUSER_NAME=admin
+   SUPERUSER_PASSWORD=admin
+   NAUTOBOT_CONTAINER_NAME=nautobot
+   POSTGRES_CONTAINER_NAME=postgres
+   REDIS_CONTAINER_NAME=redis
+   CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat
+   CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1
+   EOF
+   ```
+
+3. **Start Nautobot**:
    ```bash
    docker-compose up -d
    ```
 
-3. **Access Nautobot**:
-   - URL: http://localhost:8080
-   - Username: `admin`
-   - Password: `admin`
+4. **Access Nautobot**:
+   - URL: http://localhost:${NAUTOBOT_PORT:-8080}
+   - Username: `${SUPERUSER_NAME:-admin}`
+   - Password: `${SUPERUSER_PASSWORD:-admin}`
+
+### Environment Configuration (.env)
+
+For easy customization, create a `.env` file in the project root:
+
+```bash
+# .env
+NAUTOBOT_PORT=8080
+POSTGRES_DB=nautobot
+SUPERUSER_NAME=admin
+SUPERUSER_PASSWORD=admin
+NAUTOBOT_CONTAINER_NAME=nautobot
+POSTGRES_CONTAINER_NAME=postgres
+REDIS_CONTAINER_NAME=redis
+CELERY_BEAT_CONTAINER_NAME=nautobot_celery_beat
+CELERY_WORKER_CONTAINER_NAME=nautobot_celery_worker_1
+```
+
+**Benefits:**
+- **Easy Customization**: Change ports, credentials, and container names without editing docker-compose.yml
+- **Version Control Safe**: Add `.env` to `.gitignore` to keep sensitive data out of version control
+- **Default Values**: If `.env` doesn't exist, Docker Compose uses built-in defaults
+- **Consistent Approach**: Same method used for both single and multi-customer setups
 
 ## Local Development
 
