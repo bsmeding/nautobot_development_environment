@@ -22,8 +22,8 @@ For more information about Nautobot's capabilities as the ultimate network CMDB,
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/bsmeding/nautobot_dev_environment.git
-cd nautobot_dev_environment
+git clone https://github.com/bsmeding/nautobot_development_environment.git
+cd nautobot_development_environment
 ```
 
 ## Directory Structure
