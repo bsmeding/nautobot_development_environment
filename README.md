@@ -26,10 +26,6 @@ git clone https://github.com/bsmeding/nautobot_development_environment.git
 cd nautobot_development_environment
 ```
 
-## Multi-Customer Development Setup
-
-This section explains how to set up multiple Nautobot development environments for different customers, allowing you to work on multiple projects simultaneously.
-
 ### Directory Structure for Multiple Customers
 
 ```
@@ -556,3 +552,9 @@ Key environment variables are set in `docker-compose.yml`:
 - SSL is enabled but self-signed certificates are used
 - Debug mode is enabled for development
 - All data is persisted in Docker volumes
+
+---
+
+## Multi-Customer Development Setup (Optional)
+
+This section explains how to set up multiple Nautobot development environments for different customers, allowing you to work on multiple projects simultaneously.
